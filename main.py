@@ -5,6 +5,7 @@ from triage import Triage, triage
 from guardrails import normalize, mask_pii, looks_like_injection
 from rag import retrieve, answer                       # NEW
 from knowledge import STORE                            # NEW: built once at startup
+from fastapi.responses import RedirectResponse
 
 app = FastAPI(title="Support Triage API")
 
@@ -28,6 +29,10 @@ class TriageResponse(BaseModel):
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+@app.get("/", include_in_schema=False)     # the home address; hidden from the docs page
+def home():
+    return RedirectResponse("/docs")       # send visitors straight to the test page
 
 @app.post("/triage", response_model=TriageResponse)
 def triage_endpoint(body: TriageRequest):
@@ -65,7 +70,7 @@ def triage_endpoint(body: TriageRequest):
     )
 
 
-    
+
 # from fastapi import FastAPI, HTTPException
 # from pydantic import BaseModel, Field
 # from triage import Triage, triage
